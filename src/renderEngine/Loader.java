@@ -2,6 +2,7 @@ package renderEngine;
 
 //import java.awt.List;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -24,10 +25,13 @@ public class Loader {
     //1: CreateVAO
 	//2: StoreDataInAttrubuteList
 	//3: UnbindVAo
-	public RawModel loadToVAO(float[] positions) {
+	//It takes the 4 vertices as positions and indices tells it the order in which they are to be connected.
+	public RawModel loadToVAO(float[] positions, int[] indices) {
 		
 		//Creates VAO and retrieves its ID
 		int vaoID = createVAO();
+		//Binds indicesBuffer to VAO
+		bindIndicesBuffer(indices);
 		
 		//Stores positional Data in the attribute list (0)
 		storeDataInAttrubiteList(0, positions);
@@ -37,7 +41,7 @@ public class Loader {
 		
 		//Returns data we've created as a raw model
 		//Takes ID and needs position/3 as 3 vertex has 3 floats
-		return new RawModel(vaoID, positions.length/3);
+		return new RawModel(vaoID, indices.length);
 	}
 	
 	//Cleans up VAOS and VBO's on game close
@@ -92,6 +96,32 @@ public class Loader {
 		GL30.glBindVertexArray(0);
 	}
 	
+	//Loads indices and binds it to VAO that we want to render
+	private void bindIndicesBuffer(int[] indices) {
+		//Create empty VBO
+		int vboID = GL15.glGenBuffers();
+		//Adds to our List of VBO's
+		vbos.add(vboID);
+		//Binds the buffer so we may use it
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);
+		//Converts
+		IntBuffer buffer = storeDataInIntBuffer(indices);
+		//Stores intBuffer in VAO. (Static as unchanging)
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+		
+		
+	}
+	
+	//Converts array of indices into an intBuffer
+	private IntBuffer storeDataInIntBuffer(int[] data) {
+		//Create empty int buffer
+		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
+		//Give the data to the Buffer
+		buffer.put(data);
+		//Flips so its ready to be read from
+		buffer.flip();
+		return buffer;
+	}
 	
 	//Converts floatArray of data into a float buffer
 	private FloatBuffer storeDataInFloatBuffer(float[] data) {

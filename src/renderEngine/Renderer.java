@@ -21,8 +21,8 @@ public class Renderer {
 	GL30.glBindVertexArray(model.getVaoID());
 	//Activates attribute list in which our data is stores
 	GL20.glEnableVertexAttribArray(0);
-	//Renders! Args: What we want to render, where to start render from, how many vertices it should render
-	GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, model.getVertexCount());
+	//Renders! What we want to render. 
+	GL11.glDrawElements(GL11.GL_TRIANGLES, model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 	//Disables Attribute list
 	GL20.glDisableVertexAttribArray(0);
 	//Unbinds the VAO
