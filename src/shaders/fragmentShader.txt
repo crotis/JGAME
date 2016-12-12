@@ -1,0 +1,15 @@
+#version 400 core
+
+//Executes after vertex shader
+//Executes for each pixel to decide what colour it should be. Input colour for 
+//each run of the fragmentShader is a linearly interpolated colour value of the vertexShader output colour.  
+
+in vec3 colour;
+
+out vec4 out_Color;
+
+void main(void){
+
+	out_Color = vec4(colour,1.0);
+
+}
