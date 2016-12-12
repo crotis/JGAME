@@ -4,12 +4,16 @@
 //Executes for each pixel to decide what colour it should be. Input colour for 
 //each run of the fragmentShader is a linearly interpolated colour value of the vertexShader output colour.  
 
-in vec3 colour;
+in vec2 pass_textureCoords;
 
 out vec4 out_Color;
 
+uniform sampler2D textureSampler;
+
 void main(void){
 
-	out_Color = vec4(colour,1.0);
+    //Samples texture given in sampler2D at the texture coordinates given
+    //Gets the colour at those coords and returns it so we can output it to the pixel
+	out_Color = texture(textureSampler, pass_textureCoords);
 
 }

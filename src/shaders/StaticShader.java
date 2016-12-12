@@ -12,6 +12,8 @@ public class StaticShader extends ShaderProgram{
     @Override
     protected void bindAttributes() {
         super.bindAttribute(0, "position");
+        //Links textureColour to attribute 1 of the VAO
+        super.bindAttribute(1, "textureCoords");
     }
 }
      

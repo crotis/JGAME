@@ -3,11 +3,13 @@ package engineTester;
 
 import org.lwjgl.opengl.Display;
 
+import models.RawModel;
+import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import renderEngine.RawModel;
 import renderEngine.Renderer;
 import shaders.StaticShader;
+import textures.ModelTexture;
 
 public class MainGameLoop {
 
@@ -35,8 +37,21 @@ public class MainGameLoop {
 				3,1,2 //Bottom right triangle (V3, V1, V2)
 		};
 		
+		//Determines where on the vertices the texture maps too
+		float[] textureCoords = {
+				0,0,  //V0
+				0,1,  //V1
+				1,1,  //V2
+				1,0   //V3
+		};
+			
 		//Loads into raw models
-		RawModel model = loader.loadToVAO(vertices, indices);
+		RawModel model = loader.loadToVAO(vertices, textureCoords, indices);
+		
+		//Loads Model Texture
+		ModelTexture texture = new ModelTexture(loader.loadTexture("spiral_seamless"));
+		//Creates TexturedModel object
+		TexturedModel texturedModel = new TexturedModel(model, texture);
 			
 		while(!Display.isCloseRequested()) {
 			//Prepares Renderer every frame
@@ -45,7 +60,7 @@ public class MainGameLoop {
 			shader.start();
 			//game logic
 			//render
-			renderer.render(model);
+			renderer.render(texturedModel);
 			//Stops shader after the rendering has completed
 			shader.stop();
 			DisplayManager.updateDisplay();

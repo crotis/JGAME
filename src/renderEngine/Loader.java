@@ -1,5 +1,8 @@
 package renderEngine;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 //import java.awt.List;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -11,6 +14,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+
+import models.RawModel;
 
 //Loads 3D Models into memory by storing positional data about the model in a VAO
 public class Loader {
@@ -18,6 +25,7 @@ public class Loader {
 	//Memory Management: Keep track of VAO's and VBO's that we create & close them down the game
 	private List<Integer> vaos = new ArrayList<Integer>();
 	private List<Integer> vbos = new ArrayList<Integer>();
+	private List<Integer> textures = new ArrayList<Integer>(); 
 	
 	//Takes in positions of the models vertices, loads data into VAO
 	//and returns information about the VAO as a raw model object
@@ -26,7 +34,7 @@ public class Loader {
 	//2: StoreDataInAttrubuteList
 	//3: UnbindVAo
 	//It takes the 4 vertices as positions and indices tells it the order in which they are to be connected.
-	public RawModel loadToVAO(float[] positions, int[] indices) {
+	public RawModel loadToVAO(float[] positions, float[] textureCoordinates, int[] indices) {
 		
 		//Creates VAO and retrieves its ID
 		int vaoID = createVAO();
@@ -34,7 +42,10 @@ public class Loader {
 		bindIndicesBuffer(indices);
 		
 		//Stores positional Data in the attribute list (0)
-		storeDataInAttrubiteList(0, positions);
+		storeDataInAttrubiteList(0, 3, positions);
+		
+		//Stores positional Data of the texture in the attribute list (0)
+		storeDataInAttrubiteList(1, 2, textureCoordinates);
 		
 		//Now that we've finished using VAO, we unbind it
 		unbindVAO();
@@ -44,7 +55,25 @@ public class Loader {
 		return new RawModel(vaoID, indices.length);
 	}
 	
-	//Cleans up VAOS and VBO's on game close
+	//Loads texture into OpenGL so we can use it
+	public int loadTexture(String fileName) {
+		Texture texture = null;
+		try {
+			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/" + fileName + ".png"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int textureID = texture.getTextureID();
+		textures.add(textureID);
+		return textureID;
+
+	}
+	
+	//Cleans up VAOS, VBO's & Textures on game close
 	public void cleanUP() {
 		for(int vao:vaos) {
 			GL30.glDeleteVertexArrays(vao);
@@ -52,6 +81,9 @@ public class Loader {
 		
 		for(int vbo:vbos) {
 			GL15.glDeleteBuffers(vbo);
+		}
+		for(int texture:textures) {
+			GL11.glDeleteTextures(texture);
 		}
 	}
 	
@@ -73,7 +105,7 @@ public class Loader {
 	}
 	
 	//Store data into one of the attribute lists of the VAO, takes number of attribute list where we want to store the data and teh data itself
-	private void storeDataInAttrubiteList(int attributeNumber, float[] data) {
+	private void storeDataInAttrubiteList(int attributeNumber, int coordinateSize, float[] data) {
 		//Returns ID of VBO that we've created
 		int vboID = GL15.glGenBuffers();
 		//Adds VBO to our list so we can track it
@@ -86,7 +118,7 @@ public class Loader {
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		//Puts VBO into one of the attribute lists of VAO
 		//Takes number of attribute list, length of each vertex, type of data, whether data is normalised, and the distance between each vertices
-		GL20.glVertexAttribPointer(attributeNumber, 3, GL11.GL_FLOAT, false, 0, 0);
+		GL20.glVertexAttribPointer(attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0);
 		//Unbinds VBO now that we're finished using it
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);		
 	}
