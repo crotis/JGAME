@@ -3,9 +3,13 @@ package shaders;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
- 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
  
 //Represents a generic shader program.
 public abstract class ShaderProgram {
@@ -13,6 +17,9 @@ public abstract class ShaderProgram {
     private int programID;
     private int vertexShaderID;
     private int fragmentShaderID;
+    
+    //Allows us to load up a Matrix into uniform location
+    private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
      
   //Takes source code files and generates our shader Objects
     public ShaderProgram(String vertexFile,String fragmentFile){
@@ -28,7 +35,16 @@ public abstract class ShaderProgram {
         bindAttributes();
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
+
+        getAllUnbiformLocations();
     }
+    
+    protected int getUniformLocation(String uniformName){
+    	return GL20.glGetUniformLocation(programID, uniformName);
+    }
+    
+    //Ensures all the shader classes how a method that allows us to get all the uniform locations
+    protected abstract void getAllUnbiformLocations();
      
     public void start(){
         GL20.glUseProgram(programID);
@@ -56,6 +72,35 @@ public abstract class ShaderProgram {
         GL20.glBindAttribLocation(programID, attribute, variableName);
     }
      
+    //Loads float value to a uniform location
+    protected void loadFloat(int location, float value){
+    	GL20.glUniform1f(location, value);
+    }
+    
+    //Loads a vector into a uniform location
+    protected void loadVector(int location, Vector3f vector){
+    	GL20.glUniform3f(location, vector.x, vector.y, vector.z);
+    }
+    
+    //Loads a boolean into uniform location. There isn't a boolean in shader code, so we load up either 0 or a 1 
+    protected void loadBoolean(int location, boolean value){
+    	float toLoad = 0;
+    	if(value) {
+    		toLoad = 1;
+    	}
+    	GL20.glUniform1f(location, toLoad);
+    } 
+    
+    //Loads a Matrix into the uniform location. 
+    protected void loadMatrix(int location, Matrix4f matrix) {
+    	//Stores matrix in buffer
+    	matrix.store(matrixBuffer);
+    	//Prepares buffer to be read from
+    	matrixBuffer.flip();
+    	//Loads into location of the uniform variable
+    	GL20.glUniformMatrix4(location, false, matrixBuffer);
+    }
+    
     //Loads shader source-code files.
   	//Opens source code files, reads all the lines and connects them into one String in order to create 
   	//a new vertex/fragment shader depending on the type given. String is attached and compiled and any
