@@ -34,7 +34,7 @@ public class Loader {
 	//2: StoreDataInAttrubuteList
 	//3: UnbindVAo
 	//It takes the 4 vertices as positions and indices tells it the order in which they are to be connected.
-	public RawModel loadToVAO(float[] positions, float[] textureCoordinates, int[] indices) {
+	public RawModel loadToVAO(float[] positions, float[] textureCoordinates, float[] normals, int[] indices) {
 		
 		//Creates VAO and retrieves its ID
 		int vaoID = createVAO();
@@ -46,6 +46,9 @@ public class Loader {
 		
 		//Stores positional Data of the texture in the attribute list (0)
 		storeDataInAttrubiteList(1, 2, textureCoordinates);
+		
+		//Stores positional Data of the normals in the attribute list
+		storeDataInAttrubiteList(2, 3, normals);
 		
 		//Now that we've finished using VAO, we unbind it
 		unbindVAO();

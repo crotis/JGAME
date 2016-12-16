@@ -52,6 +52,7 @@ public class Renderer {
 	//Activates attribute list in which our data is stores
 	GL20.glEnableVertexAttribArray(0);
 	GL20.glEnableVertexAttribArray(1);
+	GL20.glEnableVertexAttribArray(2);
 	
 	//Loads up Entity's transformations(position, rotation and scale) to the transformation matrix Uniform Model
 	Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPositions(),
@@ -67,6 +68,7 @@ public class Renderer {
 	//Disables Attribute list
 	GL20.glDisableVertexAttribArray(0);
 	GL20.glDisableVertexAttribArray(1);
+	GL20.glEnableVertexAttribArray(2);
 	//Unbind's the VAO
 	GL30.glBindVertexArray(0);
     }

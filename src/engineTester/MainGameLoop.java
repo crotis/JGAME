@@ -6,6 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Entity;
+import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
@@ -30,16 +31,19 @@ public class MainGameLoop {
 		Renderer renderer = new Renderer(shader);
 		
 		//Loads into raw models
-		RawModel model = OBJLoader.loadObjModel("Stall/stall", loader);
+		RawModel model = OBJLoader.loadObjModel("Dragon/dragon", loader);
 		
 		//Loads Model Texture
-		ModelTexture texture = new ModelTexture(loader.loadTexture("Stall/stallTexture"));
+//		ModelTexture texture = new ModelTexture(loader.loadTexture("Stall/stallTexture"));
 		
 		//Creates TexturedModel object
-		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("Stall/stallTexture")));
+		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("white")));
 		
 		//Creates Entity
 		Entity entity = new Entity(staticModel, new Vector3f(0,0,-50), 0,0,0,1);
+		
+		//Creates Light Source
+		Light light = new Light(new Vector3f(0,0,-20), new Vector3f(1,1,1));
 		
 		//Creates a camera
 		Camera camera = new Camera();
@@ -54,6 +58,8 @@ public class MainGameLoop {
 			renderer.prepare();
 			//Starts our shader program
 			shader.start();
+			//Loads Light to the shader
+			shader.loadLight(light);
 			//Loads camera to the shader
 			shader.loadViewMatrix(camera);
 			//render
