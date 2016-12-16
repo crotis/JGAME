@@ -26,17 +26,17 @@ public abstract class ShaderProgram {
         vertexShaderID = loadShader(vertexFile,GL20.GL_VERTEX_SHADER);
         fragmentShaderID = loadShader(fragmentFile,GL20.GL_FRAGMENT_SHADER);
         
-        //Creates new program that ties the vertex and fragment shaders together
+        //Creates new program that ties the vertex and fragment shader's together
         programID = GL20.glCreateProgram();
          
-        //Attaches shaders' to the program 
+        //Attaches shader's to the program 
         GL20.glAttachShader(programID, vertexShaderID);
         GL20.glAttachShader(programID, fragmentShaderID);
         bindAttributes();
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
 
-        getAllUnbiformLocations();
+        getAllUniformLocations();
     }
     
     protected int getUniformLocation(String uniformName){
@@ -44,7 +44,7 @@ public abstract class ShaderProgram {
     }
     
     //Ensures all the shader classes how a method that allows us to get all the uniform locations
-    protected abstract void getAllUnbiformLocations();
+    protected abstract void getAllUniformLocations();
      
     public void start(){
         GL20.glUseProgram(programID);
@@ -54,7 +54,7 @@ public abstract class ShaderProgram {
         GL20.glUseProgram(0);
     }
      
-    //Memory Management: Deletes shaders when they're no longer needed
+    //Memory Management: Deletes shader's when they're no longer needed
     public void cleanUp(){
         stop();
         GL20.glDetachShader(programID, vertexShaderID);

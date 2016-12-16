@@ -15,15 +15,7 @@ public class RawModel {
 		return vaoID;
 	}
 
-	public void setVaoID(int vaoID) {
-		this.vaoID = vaoID;
-	}
-
 	public int getVertexCount() {
 		return vertexCount;
-	}
-
-	public void setVertexCount(int vertexCount) {
-		this.vertexCount = vertexCount;
 	}
 }
