@@ -11,6 +11,7 @@ import entities.Entity;
 import models.RawModel;
 import models.TexturedModel;
 import shaders.StaticShader;
+import textures.ModelTexture;
 import toolbox.Maths;
 
 //Renders model from VAO
@@ -41,7 +42,7 @@ public class Renderer {
 		GL11.glClearColor(0, 0.3f, 0.0f, 1);
 	}
 	
-	//Renders Raw Model
+	//Renders Raw Model, all relevant values must be loaded inside this method
 	public void render(Entity entity, StaticShader shader) {
 	//	
     TexturedModel model = entity.getModel();
@@ -59,6 +60,10 @@ public class Renderer {
 			entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
 	//Loads transformation matrix to the shader
 	shader.loadTransformationMatrix(transformationMatrix);
+	
+	//Loads up Specular-Lighting variables
+	ModelTexture texture = model.getTexture();
+	shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 		
 	//Tells openGL which texture we wish to render onto our quad.
 	GL13.glActiveTexture(GL13.GL_TEXTURE0);

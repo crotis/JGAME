@@ -39,6 +39,11 @@ public class MainGameLoop {
 		//Creates TexturedModel object
 		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("white")));
 		
+		//Creates specular lighting
+		ModelTexture texture = staticModel.getTexture();
+		texture.setShineDamper(10);
+		texture.setReflectivity(1);
+		
 		//Creates Entity
 		Entity entity = new Entity(staticModel, new Vector3f(0,0,-50), 0,0,0,1);
 		
@@ -70,7 +75,7 @@ public class MainGameLoop {
 		}
 		//Closes Shader's, VAO'S, VBO's and Display
 		shader.cleanUp();
-		loader.cleanUP();
+		loader.cleanUp();
 		DisplayManager.closeDisplay();
 	}
 }

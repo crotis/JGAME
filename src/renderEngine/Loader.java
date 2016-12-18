@@ -60,24 +60,21 @@ public class Loader {
 	
 	//Loads texture into OpenGL so we can use it
 	public int loadTexture(String fileName) {
-		Texture texture = null;
-		try {
-			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/" + fileName + ".png"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		int textureID = texture.getTextureID();
-		textures.add(textureID);
-		return textureID;
-
-	}
+        Texture texture = null;
+        try {
+            texture = TextureLoader.getTexture("PNG",
+                    new FileInputStream("res/" + fileName + ".png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Tried to load texture " + fileName + ".png , didn't work");
+            System.exit(-1);
+        }
+        textures.add(texture.getTextureID());
+        return texture.getTextureID();
+    }
 	
 	//Cleans up VAOS, VBO's & Textures on game close
-	public void cleanUP() {
+	public void cleanUp() {
 		for(int vao:vaos) {
 			GL30.glDeleteVertexArrays(vao);
 		}
@@ -149,7 +146,7 @@ public class Loader {
 	
 	//Converts array of indices into an intBuffer
 	private IntBuffer storeDataInIntBuffer(int[] data) {
-		//Create empty int buffer
+		//Create empty IntBuffer
 		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
 		//Give the data to the Buffer
 		buffer.put(data);
