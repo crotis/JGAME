@@ -1,9 +1,6 @@
 package renderEngine;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-//import java.awt.List;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
