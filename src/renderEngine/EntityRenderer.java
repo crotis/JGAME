@@ -3,7 +3,6 @@ package renderEngine;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -18,39 +17,17 @@ import textures.ModelTexture;
 import toolbox.Maths;
 
 //Renders model from VAO
-public class Renderer {
+public class EntityRenderer{
 	
-	//Field of few angle for projection matrix
-	private static final float FOV = 70;
-	private static final float NEAR_PLANE = 0.1f;
-	//How far you can see into the distance
-	private static final float FAR_PLANE = 1000;
-	
-	private Matrix4f projectionMatrix;
 	private StaticShader shader;
 	
-	public Renderer(StaticShader shader){
+	public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix){
 		
 		this.shader = shader;
-		
-		//Stops triangles facing away from the camera being rendered
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-		
-		createProjectionMatrix();
+				
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.stop();
-	}
-	
-	//Called once every frame; prepares openGL to render the game
-	public void prepare() {
-		
-		//Tells openGL to render triangles in the correct order depending on the depth from the camera
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		//Clears colour from the last frame
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0, 0.3f, 0.0f, 1);
 	}
 	
 	//Renders Raw Model, all relevant values must be loaded inside this method
@@ -107,20 +84,4 @@ public class Renderer {
 		//Loads transformation matrix to the shader
 		shader.loadTransformationMatrix(transformationMatrix);
 	}
-	
-	
-	private void createProjectionMatrix(){
-        float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
-        float frustum_length = FAR_PLANE - NEAR_PLANE;
- 
-        projectionMatrix = new Matrix4f();
-        projectionMatrix.m00 = x_scale;
-        projectionMatrix.m11 = y_scale;
-        projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
-        projectionMatrix.m23 = -1;
-        projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
-        projectionMatrix.m33 = 0;
-    }
 }

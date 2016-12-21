@@ -1,0 +1,35 @@
+#version 400 core
+
+//Vertex Shader has access to the positions of any given VAO in the form of the vector 3-position variable
+//Vector shader executes for each vertex and uses the input position to tell the GPU where on the screen the vertex should be rendered. This is done by setting the "gl_Position" variable.
+///Then vertex shader calculates a colour for each vertex based on its position
+// we did this by setting colour red component to the x position + 0.5, green component to 1, and the blue component to the y position +0.5
+//The difference or (dot-product) between SurfaceNormal & toLightVector is used to determine how light a particular vector should be (T11)
+
+in vec3 position;
+in vec2 textureCoordinates;
+in vec3 normal;
+
+out vec2 pass_textureCoordinates;
+out vec3 surfaceNormal;
+out vec3 toLightVector;
+out vec3 toCameraVector;
+
+uniform mat4 transformationMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform vec3 lightPosition;
+
+//View matrix contains the negative version of the camera's position
+void main(void){
+
+	vec4 worldPosition = transformationMatrix * vec4(position,1.0);
+	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	//Increasing terrains Texture coordinates allows for tilling effect (*40)
+	pass_textureCoordinates = textureCoordinates * 40.0;
+	
+	surfaceNormal = (transformationMatrix * vec4(normal,0.0)).xyz;
+	toLightVector = lightPosition - worldPosition.xyz;
+	toCameraVector = (inverse(viewMatrix) * vec4(0.0,0.0,0.0,1.0)).xyz - worldPosition.xyz;
+		
+}
